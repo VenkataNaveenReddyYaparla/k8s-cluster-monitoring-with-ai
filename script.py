@@ -1,26 +1,4 @@
 #!/usr/bin/env python3
-"""
-script.py - Cluster Monitor AI
-
-Plain, single-file version:
-1. Queries Prometheus for node, pod, storage, alert, Longhorn, and network metrics.
-2. Sends the collected metrics to Google Gemini (free tier) for an AI-generated summary.
-3. Prints the summary to the console.
-4. Emails the summary via SMTP (supports multiple servers, with or without
-   password auth, with or without TLS/SSL).
-
-Setup:
-    pip install -r requirements.txt
-    Copy .env.example to .env and fill in your own values.
-
-Run:
-    python script.py
-    python script.py --dry-run     (skip sending email)
-    python script.py --no-ai       (skip Gemini, email raw metrics)
-
-Security note: keep .env out of source control -- it contains secrets.
-"""
-
 import argparse
 import datetime
 import html
