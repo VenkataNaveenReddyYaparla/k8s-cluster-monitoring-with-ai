@@ -63,6 +63,15 @@ def env_list(name: str, required: bool = True):
 load_env_file()
 
 PROMETHEUS_URL = env_required("PROMETHEUS_URL").rstrip("/")
+# Optional auth for Prometheus instances that sit behind a reverse proxy or
+# have auth enabled -- a bearer token takes precedence over basic auth if
+# both are somehow set.
+PROMETHEUS_BEARER_TOKEN = env_optional("PROMETHEUS_BEARER_TOKEN")
+PROMETHEUS_USER = env_optional("PROMETHEUS_USER")
+PROMETHEUS_PASS = env_optional("PROMETHEUS_PASS")
+if bool(PROMETHEUS_USER) != bool(PROMETHEUS_PASS):
+    raise SystemExit("PROMETHEUS_USER and PROMETHEUS_PASS must both be set, or both left unset.")
+
 GEMINI_API_KEY = env_required("GEMINI_API_KEY")
 GEMINI_MODEL = env_optional("GEMINI_MODEL", "auto")
 MAX_ROWS_PER_QUERY = env_int("MAX_ROWS_PER_QUERY", 30)
@@ -96,7 +105,7 @@ def _parse_smtp_targets():
             try:
                 port = int(port_str)
             except ValueError:
-                port = SMTP_PORT_DEFAULT
+                raise SystemExit(f"Invalid port in SMTP_SERVER entry: {entry}")
         targets.append((host, port))
     return targets
 
@@ -192,8 +201,15 @@ def query_prometheus(promql: str):
     Retries transient network errors a few times before giving up."""
     url = f"{PROMETHEUS_URL}/api/v1/query"
 
+    headers = {}
+    auth = None
+    if PROMETHEUS_BEARER_TOKEN:
+        headers["Authorization"] = f"Bearer {PROMETHEUS_BEARER_TOKEN}"
+    elif PROMETHEUS_USER and PROMETHEUS_PASS:
+        auth = (PROMETHEUS_USER, PROMETHEUS_PASS)
+
     def do_request():
-        resp = requests.get(url, params={"query": promql}, timeout=15)
+        resp = requests.get(url, params={"query": promql}, headers=headers, auth=auth, timeout=15)
         resp.raise_for_status()
         return resp
 

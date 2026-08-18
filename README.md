@@ -65,6 +65,8 @@ variables:
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |
 | `PROMETHEUS_URL` | yes | -- | Base URL of your Prometheus server. |
+| `PROMETHEUS_BEARER_TOKEN` | no | unset | Bearer token, if Prometheus requires auth. Takes precedence over user/pass. |
+| `PROMETHEUS_USER` / `PROMETHEUS_PASS` | no | unset | Basic auth for Prometheus. Both set = authenticate; both unset = no auth. |
 | `GEMINI_API_KEY` | yes | -- | Google Gemini API key (free tier works). |
 | `GEMINI_MODEL` | no | `auto` | Pin a model name, or `auto` to rank + fall back. |
 | `MAX_ROWS_PER_QUERY` | no | `30` | Caps rows per PromQL result sent to the LLM. |
