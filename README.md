@@ -26,6 +26,13 @@ Kubernetes CronJob for periodic reports.
 - Single file, minimal dependencies (`requests` + `google-genai`), no
   framework or package structure.
 
+## Sample output
+
+Here's what a resulting email summary looks like (workload/namespace/node
+names below are anonymized placeholders, not real cluster data):
+
+![Sample cluster health summary email](docs/sample-summary-email.svg)
+
 ## Installation
 
 ```bash
